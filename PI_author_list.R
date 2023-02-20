@@ -157,6 +157,9 @@ for (i in 1:nrow(d4)) {
   first_name <- split_string[2]
   first_name <- strsplit(first_name, " ")[[1]]
   first_name <- first_name[2:3]
+  if(is.na(first_name[[2]])) {
+    first_name <- first_name[[1]]
+  }
   first_name <- paste0(substr(first_name, 1, 1), ".")
   first_name <- paste(first_name, collapse = "")
   
