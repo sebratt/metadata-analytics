@@ -11,6 +11,7 @@
 library(readr)
 install.packages("splitstackshape")
 library(splitstackshape)
+library(readxl)
 
 Author_tracking <- read_xlsx("Author_tracking_QLiu.xlsx")
 
@@ -40,3 +41,22 @@ result2 <- cSplit(result, "author_id_list", sep = " ", direction = "long")
 colnames(result2)[3] <-  "author_id"
 
 result3 <- merge(x = result2, y= author_name_jun, by ="author_id", all.x = TRUE)
+
+# Check ambiguous authors: is the problem solved with Jun's SS approach? 
+# example:  Fujiwara T. (a name in Joy's list that has >5 papers per year)
+
+fujiwara_ids <- c('AB025228', 'AF219994', 'AB015223', 'AB024763', 'AF219990', 'AB032920', 'AB045381, 
+                  AB045382', 'AJ299430', 'AJ299431', 'AF233369', 'AB049211', 'AJ278286', 'AB060300', 
+                  'AJ277440', 'AY043290', 'AB033823', 'AB064943', 'AY043484', 'AB073713')
+colnames(fujiwara_ids)[1] <- "match_ids_GB"
+
+result3 <- cSplit(result3, "Genbank_ids", sep='_1', direction = 'wide')
+colnames(result3)[10] <- "match_ids_GB"
+colnames(fujiwara_ids)[1] <- "match_ids_GB"
+m <- merge(x = result3, y = fujiwara_ids, by = "match_ids_GB")
+
+write.csv(fujiwara, "fujiwara_disambig.csv")
+
+
+
+
