@@ -13,11 +13,7 @@ library(readr)
 install.packages("splitstackshape")
 library(splitstackshape)
 library(readxl)
-<<<<<<< HEAD
-ghghg
-library(whatever)
-=======
->>>>>>> 18b623b591ca664ad3a0350d9d8cbc90f0858387
+
 
 Author_tracking <- read_xlsx("Author_tracking_QLiu.xlsx") # this is the file 
 
