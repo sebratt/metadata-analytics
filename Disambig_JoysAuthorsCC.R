@@ -12,6 +12,7 @@ library(readr)
 install.packages("splitstackshape")
 library(splitstackshape)
 library(readxl)
+library(whatever)
 
 Author_tracking <- read_xlsx("Author_tracking_QLiu.xlsx")
 
