@@ -13,10 +13,13 @@ library(readr)
 install.packages("splitstackshape")
 library(splitstackshape)
 library(readxl)
+<<<<<<< HEAD
 ghghg
 library(whatever)
+=======
+>>>>>>> 18b623b591ca664ad3a0350d9d8cbc90f0858387
 
-Author_tracking <- read_xlsx("Author_tracking_QLiu.xlsx")
+Author_tracking <- read_xlsx("Author_tracking_QLiu.xlsx") # this is the file 
 
 
 ss_genbank_authors <- read_csv("genbank2021/csv_name_disambiguation/genbank_semanticscholar_publication_author_with_genbank_reference_ids.csv")
