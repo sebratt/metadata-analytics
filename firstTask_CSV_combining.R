@@ -49,18 +49,23 @@ all_countries <- str_c(unique(world.cities$country.etc), collapse = "|")
 combCost$country <- sapply(str_extract_all(combCost$journal.x,
                                            all_countries), toString)
 
+# Checking the datatype of the country and countrycode column
+# Changing the datatype of country column from character to factor
+class(combCost$country)
+combCost$country <- as.factor(combCost$country)
+
+
 # Creating a new column for country codes
 combCost$countrycode <- countrycode(sourcevar = combCost$country,
                                     origin = "country.name",
                                     destination = "iso3c")
 
-# Checking the datatype of the country and countrycode column
-class(combCost$country)
-class(combCost$countrycode)
 
+# Checking the datatype of the country and countrycode column
 # Changing the datatype of country column from character to factor
+class(combCost$countrycode)
 combCost$countrycode <- as.factor(combCost$countrycode)
-combCost$country <- as.factor(combCost$country)
+
 
 # Summary of combCost
 summary(combCost)
@@ -120,3 +125,36 @@ GB_NIH_FINAL_WITH_ALL_COLUMNS.file <-
   paste0("~/metadata-analytics/GB_NIH_FINAL_COST.csv")
 write.csv(GB_NIH_FINAL_WITH_ALL_COLUMNS, GB_NIH_FINAL_WITH_ALL_COLUMNS.file,
           row.names = FALSE)
+
+# Grouping by year and calculating frequency of all countries per year for X
+grouped_by_year_x_all <- combCost %>% group_by(year_etc.x) %>%
+                          summarize(count = n())
+frequency_by_country_x_all <- grouped_by_year_x_all %>% arrange(desc(count))
+
+print(head(frequency_by_country_x_all))
+
+# Grouping by year and calculating frequency of individual countries per year
+# for X
+grouped_by_year_x_indi <- combCost %>% group_by(year_etc.x)
+frequency_by_country_x_indi <- grouped_by_year_x_indi %>% 
+                                count(countrycode) %>% arrange(desc(n))
+
+print(head(frequency_by_country_x_indi))
+
+#!!!! But this is confusing as journal.y does not have country information!!!!
+
+# Grouping by year and calculating frequency of all countries per year for Y
+grouped_by_year_y_all <- combCost %>% group_by(year_etc.y) %>%
+  summarize(count = n())
+frequency_by_country_y_all <- grouped_by_year_y_all %>% arrange(desc(count))
+
+print(head(frequency_by_country_y_all))
+
+
+# Grouping by year and calculating frequency of individual countries per year
+# for Y 
+grouped_by_year_y_indi <- combCost %>% group_by(year_etc.y)
+frequency_by_country_y_indi <- grouped_by_year_y_indi %>% 
+                                count(countrycode) %>% arrange(desc(n))
+
+print(head(frequency_by_country_y_indi))
