@@ -1,0 +1,35 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # 
+#
+# Goal: Connect GenBank publications and datasets on one row
+# 
+# Separate the index in ref_id out from REFERENCE_WITH_YEAR to create primary ID (prefix only)
+# For example: Take off the suffix of ABCD_1, ABCD_2, ABCD_3 so it is just ABCD for each row 
+# Merge by ABCD (i.e. the truncated ref_id
+# 
+# Author: Sarah Bratt 
+# Date: 03-14-2023
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # 
+# Install packages 
+#install.packages("tidyr") 
+library(tidyr) 
+
+GBdf <- read_delim(                                  # ROWS: 52,803,086; COLS: 9
+  'REFERENCE_with_year.csv', delim ='|', col_names = FALSE)
+
+# Rename Columns
+colnames(GBdf) <- c('GB_ID', 'reference','authors','consortium','title'
+                    ,'journal', 'pubmed','remark', 'year_etc')
+
+# GBdf Split GB_ID into the suffix of reference ID into 2 columns 
+GBdf <- GBdf %>%                                    # ROWS: 52,803,086, COLS: 10
+  separate(GB_ID, into = c('refid', 'index'), sep = '_', convert = FALSE)
+
+# Subset the data for datasets only (Direct Submissions)
+ref_sub <- GBdf[grep("Direct Submission", GBdf$title), ]
+
+# subset for pubs only (everything else) using invert
+ref_pub <- GBdf[ grep("Direct Submission", GBdf$title), invert = true, ] 
+
+# merge back together so datasets and associated publications are on the same row 
+ref_index_merge <- merge(x = ref_pub, y = ref_sub, by= 'refid', ) 
