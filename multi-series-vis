@@ -1,0 +1,37 @@
+# Visualization of Multiple series (e.g., flavors of icecream)
+# by jeff hemsley
+# Sarah Bratt 7-5-2023
+
+x <- 1992:2021
+y1 <- rnorm(n = length(x), mean = 10200, sd = 120)
+y2 <- rnorm(n = length(x), mean = 1290, sd = 100)
+y3 <- rnorm(n = length(x), mean = 1100, sd = 140)
+
+ 
+
+y21 <- rnorm(n = length(x), mean = 900, sd = 50)
+y22 <- rnorm(n = length(x), mean = 490, sd = 100)
+y23 <- rnorm(n = length(x), mean = 800, sd = 140)
+
+ 
+
+my.y.max <- max(c(y1, y2, y3, y21, y22, y23))
+
+ 
+
+plot(x, log10(y1), ylim=c(0,log10(my.y.max)), 
+     type = "l", col = "#63B8FF77", lwd=2, yaxt="none")
+axis(2, at=0:4, labels=c(0,10,100,1000,10000))
+lines(x, log10(y2), col = "#4F94CD77", lwd = 2)
+lines(x, log10(y3), col = "#36648B77", lwd =2)
+lines(x, log10(y21), col = "#ff000077")
+lines(x, log10(y22), col = "#CD000077")
+lines(x, y23, col = "#8B000077")
+
+ 
+
+par(mfrow=c(2,2))
+plot(x, y1, ylim=c(0,my.y.max), type = "l", col = "#63B8FF77", lwd=2)
+plot(x, y1, ylim=c(0,my.y.max), type = "l", col = "#63B8FF77", lwd=2)
+plot(x, y1, ylim=c(0,my.y.max), type = "l", col = "#63B8FF77", lwd=2)
+plot(x, y1, ylim=c(0,my.y.max), type = "l", col = "#63B8FF77", lwd=2)
