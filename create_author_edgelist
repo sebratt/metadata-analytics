@@ -1,0 +1,65 @@
+# Create an author edgelist from GenBank author data
+# By: Sarah Bratt
+# Date: 07-24-2023
+
+df.auths <- read.csv("sample_REFERENCE_with_year.csv")
+
+df.auths$authors<- gsub(" and",",", df.auths$authors) 
+df.auths$authors <- gsub(" and ",",", df.auths$authors)
+df.auths$authors <- gsub("and ",",", df.auths$authors)
+
+df.auths<- cSplit(df.auths, "authors", ".,",'wide') # split the author cell into columns (horizontally), where comma is the delimiter.
+
+nrow <- dim(df.auths)[1] # count the number of rows: this is the total number of submissions for that year.
+ncol <- dim(df.auths)[2] 
+df.auths$teamsize <- rowSums(!is.na(df.auths)) # Create a column containing teamsize by using rowSums to count the number not NA cells, to get the count of authors on a submission.
+
+teamsize_summary <- summary(df.auths$teamsize)
+min_teamsize <- teamsize_summary[1]
+teamsize_1stquartile <- teamsize_summary[2]
+teamsize_median <- teamsize_summary[3]
+teamsize_mean <- teamsize_summary[4]
+teamsize_3rdquartile <- teamsize_summary[5]
+teamsize_Max <- teamsize_summary[6]
+
+N <- data.frame(df.auths)
+N <- N[ -c(1:8) ]     # Remove columns that are not authors so we can just deal with author names. 
+colnames(N) # Check - should only be "authors_..."
+
+N$iz.na <- is.na(N[,2]) # If the second column has NA's, this indicates solo-authorshup.
+false_aka_coAUTH <- table(N$iz.na)[1] # how many are multiple authored datasets? 
+true_aka_SOLO <- table(N$iz.na)[2] # how many are single-authored datasets?
+paste0("There are ", true_aka_SOLO, " single-authored records (datasets or submissions) and ",
+       false_aka_coAUTH, " more-than-one authored records.")
+
+N<-N[!N$iz.na,] # Remove the rows with NA so we just have multi-authored records
+N$iz.na <- NULL # Remove the NA column.
+N$teamsize <- NULL # Remove the teamsize column. 
+portion_coauthorship <- 100*(false_aka_coAUTH/nrow)
+portion_soloauthorship <- 100*(true_aka_SOLO/nrow)
+paste0(round(portion_coauthorship, 2),"% (percent) of records are co-authored. ",
+       round(portion_soloauthorship,2), "% (percent) are single-authored records.")
+
+
+for (my.row in 1:dim(N)[1]) 
+{
+  # my.row <- 1 + my.row
+  # print(my.row)
+  tmpN <- t(combn(N[my.row,!is.na(N[my.row,])], 2))
+  tmp.df <- data.frame(Auth1 = unlist(tmpN[, 1]), Auth2 = unlist(tmpN[, 2]), stringsAsFactors = FALSE)
+  
+  colnames(tmp.df) <- c("Auth1", "Auth2")
+  
+  # tmp.df$ref.years<- ref.years[my.row] # Add if you want to give pair attributes, such as the year.
+  # tmp.df$ref.type <- ref.type[my.row]  # Add if you want to give pair attributes, such as the reference type.
+  
+  df.N <- rbind(df.N, tmp.df)
+  gc() # for every var written and overwritten, R 'holds onto the memory'. Allows R to recalim memory. Will keep vars in global environment. 
+  
+}
+
+# Write the Linkedlist of the submission network for that year to a .csv file. 
+# no spaces = paste0.
+i = 2019
+linkedlist <- paste("submission-linkedlist-genbank2021-", i, ".csv", sep = "")
+write.csv(df.N, linkedlist)
